@@ -20,7 +20,12 @@ class GalleriesController extends Controller
      */
     public function store(Request $request)
     {
-        Galleries::create($request->all());
+        $data = $request->except('file_path');
+        if ($request->hasFile('file_path')) {
+            $file = $request->file('file_path');
+            $data['file_path'] = file_get_contents($file->getRealPath()); // simpan sebagai BLOB
+        }
+        $request = Galleries::create($data);
         return redirect()->route('petugas-galeri')->with('success', 'Data galeri berhasil ditambahkan.');
     }
     /**
@@ -57,17 +62,26 @@ class GalleriesController extends Controller
 
     public function showBlob($id)
     {
-        $gallery = Gallery::findOrFail($id);
+        $gallery = Galleries::findOrFail($id);
 
+        // Check if file_path data exists in database
         if (empty($gallery->file_path)) {
             abort(404, 'File tidak ditemukan');
         }
 
+        // Since file_path is stored as BLOB, we can directly use the binary data
         $binary = $gallery->file_path;
 
-        // Deteksi MIME type otomatis dari BLOB
-        $finfo = new \finfo(FILEINFO_MIME_TYPE);
-        $mimeType = $finfo->buffer($binary);
+        // Detect MIME type
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimeType = finfo_buffer($finfo, $binary);
+        finfo_close($finfo);
+
+        // If MIME type detection fails, default to image/jpeg
+        if (!$mimeType || $mimeType === 'application/octet-stream') {
+            // If MIME type detection fails, use generic binary type
+            $mimeType = 'application/octet-stream';
+        }
 
         return response($binary)
             ->header('Content-Type', $mimeType)
