@@ -20,25 +20,7 @@ class GalleriesController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->except('file_path', 'link'); // kita proses manual nanti
-
-        if ($request->type === 'link') {
-            // Simpan link jika tipe adalah "link"
-            $data['link'] = $request->input('link');
-            $data['file_path'] = null;
-        } else {
-            // Simpan file jika tipe adalah selain "link"
-            if ($request->hasFile('file_path')) {
-                $file = $request->file('file_path');
-                $data['file_path'] = file_get_contents($file->getRealPath());
-            } else {
-                $data['file_path'] = null;
-            }
-            $data['link'] = null;
-        }
-
-        Galleries::create($data);
-
+        Galleries::create($request->all());
         return redirect()->route('petugas-galeri')->with('success', 'Data galeri berhasil ditambahkan.');
     }
 
@@ -96,28 +78,18 @@ class GalleriesController extends Controller
 
     public function showBlob($id)
     {
-        // Find the gallery by ID
-        $gallery = Galleries::findOrFail($id);
+        $gallery = Gallery::findOrFail($id);
 
-        // Check if file_path data exists in database
-        if (!$gallery->file_path) {
+        if (empty($gallery->file_path)) {
             abort(404, 'File tidak ditemukan');
         }
 
-        // Get the binary data from the BLOB field
         $binary = $gallery->file_path;
 
-        // Detect MIME type using finfo
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mimeType = finfo_buffer($finfo, $binary);
-        finfo_close($finfo);
+        // Deteksi MIME type otomatis dari BLOB
+        $finfo = new \finfo(FILEINFO_MIME_TYPE);
+        $mimeType = $finfo->buffer($binary);
 
-        // If MIME type detection fails, default to image/jpeg
-        if (!$mimeType || $mimeType === 'application/octet-stream') {
-            $mimeType = 'image/jpeg';
-        }
-
-        // Return response with appropriate headers
         return response($binary)
             ->header('Content-Type', $mimeType)
             ->header('Content-Disposition', 'inline');
