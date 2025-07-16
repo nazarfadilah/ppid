@@ -78,7 +78,7 @@ class GalleriesController extends Controller
 
     public function showBlob($id)
     {
-        $gallery = Gallery::findOrFail($id);
+        $gallery = Galleries::findOrFail($id);
 
         if (empty($gallery->file_path)) {
             abort(404, 'File tidak ditemukan');
