@@ -43,7 +43,7 @@
                     <option value="25">25</option>
                     <option value="50">50</option>
                 </select>
-                <span>data per halaman</span>
+                {{-- <span>data per halaman</span> --}}
             </div>
         </div>
     </div>

@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('whistles', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->string('nama', 64);
             $table->string('no_hp', 15);
             $table->string('email')->nullable();
@@ -23,10 +24,13 @@ return new class extends Migration
             $table->text('lokasi_kejadian')->nullable();
             $table->text('kronologis');
             $table->decimal('nominal_korupsi', 15, 2)->nullable();
-            $table->blob('foto_bukti');
+            $table->binary('foto_bukti');
             $table->enum('status', ['pending','rejected','confirmed', 'finished'])->default('pending');
             $table->text('alasan')->nullable();
             $table->timestamps();
+        });
+        Schema::table('whistles', function (Blueprint $table) {
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
         });
     }
 

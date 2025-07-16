@@ -10,21 +10,28 @@ use App\Mail\WhistleConfirmedMail;
 use App\Mail\WhistleFinishedMail;
 use App\Mail\WhistleRejectedMail;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+
 
 
 class WhistleController extends Controller
 {
     // Khusus route pengguna
-    public function store(Request $request)
-    {
-        $data = $request->except('foto_bukti');
-        if ($request->hasFile('foto_bukti')) {
-            $file = $request->file('foto_bukti');
-            $data['foto_bukti'] = file_get_contents($file->getRealPath()); // simpan sebagai BLOB
-        }
-        $objection = Whistle::create($data);
-        return redirect()->route('public.index')->with('success', 'Data keberatan berhasil dikirim.');
+    public function store(Request $whistle)
+{
+    $data = $whistle->except('foto_bukti');
+    if ($whistle->hasFile('foto_bukti')) {
+        $file = $whistle->file('foto_bukti');
+        $data['foto_bukti'] = file_get_contents($file->getRealPath()); // simpan sebagai BLOB
     }
+
+    $data['user_id'] = Auth::user()->id;
+    $whistle = Whistle::create($data);
+
+    return redirect()->route('public.index')->with('success', 'Data keberatan berhasil dikirim.');
+}
+
 
     // Tampilkan semua data
     public function index()
@@ -55,7 +62,7 @@ class WhistleController extends Controller
         $whistle->delete();
         return redirect()->route('petugas-whistle-bowling')->with('success', 'Data berhasil dihapus.');
     }
-    public function showFotoBukti($id)
+    public function showImage($id)
     {
         // 1. Cari data whistle berdasarkan ID, jika tidak ketemu akan error 404
         $whistle = Whistle::findOrFail($id);
@@ -74,9 +81,27 @@ class WhistleController extends Controller
         $mimeType = finfo_buffer($finfo, $fotoBuktiData);
         finfo_close($finfo);
 
-        // 5. Jika deteksi MIME gagal, gunakan default image/jpeg
-        if (!$mimeType || $mimeType === 'application/octet-stream') {
-            $mimeType = 'image/jpeg';
+        // 5. Handle berbagai jenis file
+        $supportedMimes = [
+            'image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/bmp', 
+            'image/tiff', 'image/svg+xml', 'application/pdf'
+        ];
+
+        // Jika deteksi MIME gagal atau tidak didukung, coba tentukan dari data
+        if (!$mimeType || !in_array($mimeType, $supportedMimes)) {
+            // Deteksi berdasarkan signature file
+            if (substr($fotoBuktiData, 0, 4) === "\x25\x50\x44\x46") { // %PDF
+                $mimeType = 'application/pdf';
+            } elseif (substr($fotoBuktiData, 0, 2) === "\xFF\xD8") {
+                $mimeType = 'image/jpeg';
+            } elseif (substr($fotoBuktiData, 0, 8) === "\x89\x50\x4E\x47\x0D\x0A\x1A\x0A") {
+                $mimeType = 'image/png';
+            } elseif (substr($fotoBuktiData, 0, 6) === "\x47\x49\x46\x38\x37\x61" || 
+                     substr($fotoBuktiData, 0, 6) === "\x47\x49\x46\x38\x39\x61") {
+                $mimeType = 'image/gif';
+            } else {
+                $mimeType = 'application/octet-stream';
+            }
         }
 
         // 6. Buat respons HTTP dengan data foto bukti dan header yang sesuai

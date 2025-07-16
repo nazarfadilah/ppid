@@ -18,7 +18,7 @@ return new class extends Migration
             $table->date('date'); // Tanggal galeri
             $table->enum('type', ['foto', 'video', 'comic', 'podcast'])->default('video'); // Tipe galeri
             $table->text('link')->nullable(); // Link (jika video, podcast, comic)
-            $table->longblob('data')->nullable()->default(12); // File (jika foto)
+            $table->binary('file_path')->nullable(); // File (jika foto)
             $table->timestamps(); // Created at dan updated at
         });
     }

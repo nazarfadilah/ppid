@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Http\Resources\ObjectionResource;
+use App\Models\User;
 class Objection extends Model
 {
     use HasFactory;
@@ -12,7 +13,6 @@ class Objection extends Model
     protected $table = 'objection';
 
     protected $fillable = [
-        'code',
         'nama_pemohon',
         'alamat_pemohon',
         'pekerjaan_pemohon',
@@ -23,7 +23,7 @@ class Objection extends Model
         'no_hp_kuasa_pemohon',
         'alasan_pengajuan',
         'kasus_posisi',
-        'ktp_pemohon' => 'binary',
+        'ktp_pemohon',
         'status',
         'reject_reason',
     ];
@@ -34,5 +34,10 @@ class Objection extends Model
     public function getStatusAttribute($value)
     {
         return ucfirst($value);
+    }
+    // relasi ke id_user
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

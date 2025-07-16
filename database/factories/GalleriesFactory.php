@@ -18,6 +18,7 @@ class GalleriesFactory extends Factory
     {
         return [
             'link' => $this->faker->url(),
+            'file_path' => $this->faker->optional()->filePath(),
             'title' => $this->faker->sentence(4),
             'type' => $this->faker->randomElement([
                 \App\Models\Galleries::TYPE_FOTO,

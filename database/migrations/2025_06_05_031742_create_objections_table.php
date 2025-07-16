@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('objection', function (Blueprint $table) {
             $table->id();
             // Pemohon
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->string('nama_pemohon', 50);
             $table->text('alamat_pemohon');
             $table->string('pekerjaan_pemohon', 100);
@@ -30,6 +31,9 @@ return new class extends Migration
             $table->enum('status', ['Approved', 'Rejected', 'Checking'])->default('checking');
             $table->text('reject_reason')->nullable();
             $table->timestamps();
+        });
+        Schema::table('objection', function (Blueprint $table) {
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
         });
     }
     /**

@@ -33,55 +33,108 @@ class RektorController extends Controller
         return view('rektor.gallery.index', compact('galleries'));
     }
     public function informasiIndex()
-    {
-        $startDate = Carbon::now()->startOfMonth();
-        $endDate = Carbon::now()->endOfMonth();
-        $initialChartData = $this->fetchStatisticalData($startDate, $endDate, 'all', 'monthly');
-        return view('rektor.informasi.index', ['initialChartData' => $initialChartData]);
+{
+    $start = Carbon::now()->startOfMonth();
+    $end = Carbon::now()->endOfMonth();
+
+    $initialChartData = $this->fetchStatisticalData($start, $end, 'all');
+    $requests = PublicInformationRequest::whereBetween('created_at', [$start, $end])->latest()->paginate(10);
+
+    $tableHtml = $this->generateTableHtml($requests);
+    $paginationHtml = $requests->links('pagination::bootstrap-5')->toHtml();
+
+    return view('rektor.informasi.index', [
+        'initialChartData' => $initialChartData,
+        'initialTableHtml' => $tableHtml,
+        'initialPagination' => $paginationHtml
+    ]);
+}
+
+public function getStatistics(Request $request)
+{
+    $status = $request->input('status', 'all');
+    $start = Carbon::parse($request->input('startDate'));
+    $end = Carbon::parse($request->input('endDate'));
+    $perPage = $request->input('perPage', 10);
+
+    $chartData = $this->fetchStatisticalData($start, $end, $status);
+
+    $query = PublicInformationRequest::whereBetween('created_at', [$start, $end]);
+    if ($status !== 'all') {
+        $query->where('status', $status);
     }
 
-    /**
-     * FUNGSI 2: JALUR TELEPON (API)
-     * Melayani permintaan data dari JavaScript.
-     */
-    public function getStatistics(Request $request)
-    {
-        $startDate = Carbon::parse($request->input('startDate', Carbon::now()->startOfMonth()))->startOfDay();
-        $endDate = Carbon::parse($request->input('endDate', Carbon::now()->endOfMonth()))->endOfDay();
-        $status = $request->input('status', 'all');
-        $period = $request->input('period', 'monthly');
-        $data = $this->fetchStatisticalData($startDate, $endDate, $status, $period);
-        return response()->json($data);
+    $requests = $query->latest()->paginate($perPage);
+    $tableHtml = $this->generateTableHtml($requests);
+    $paginationHtml = $requests->links('pagination::bootstrap-5')->toHtml();
+
+    return response()->json([
+        'chartData' => $chartData,
+        'table_html' => $tableHtml,
+        'pagination_html' => $paginationHtml,
+    ]);
+}
+
+private function generateTableHtml($requests)
+{
+    if ($requests->isEmpty()) {
+        return '<tr><td colspan="7" class="text-center">Tidak ada data ditemukan.</td></tr>';
     }
 
-    /**
-     * FUNGSI 3 (private): RESEP RAHASIA
-     * Hanya untuk internal, tidak bisa diakses dari luar.
-     */
-    private function fetchStatisticalData(Carbon $startDate, Carbon $endDate, string $status, string $period): array
-    {
-        $query = PublicInformationRequest::query()->whereBetween('created_at', [$startDate, $endDate]);
-        if ($status !== 'all') {
-            $query->where('status', $status);
-        }
+    $html = '';
+    foreach ($requests as $key => $req) {
+        $iteration = $requests->firstItem() + $key;
+        $statusBadge = match ($req->status) {
+            'Approved' => '<span class="badge bg-success">Approved</span>',
+            'Rejected' => '<span class="badge bg-danger">Rejected</span>',
+            default => '<span class="badge bg-warning">Checking</span>',
+        };
+        $tanggal = $req->created_at->format('d M Y');
 
-        $filteredQuery = clone $query;
-        $summary = ['total' => (clone $filteredQuery)->count(), 'approved' => (clone $filteredQuery)->where('status', 'Approved')->count(), 'rejected' => (clone $filteredQuery)->where('status', 'Rejected')->count(), 'pending' => (clone $filteredQuery)->whereIn('status', ['Checking'])->count()];
-        $byStatusData = (clone $filteredQuery)->select('status', DB::raw('count(*) as total'))->groupBy('status')->get()->pluck('total', 'status');
-        $byCategoryData = (clone $filteredQuery)->select('request_category', DB::raw('count(*) as total'))->groupBy('request_category')->get();
-        $categoryLabels = ['individual' => 'Perorangan', 'organization' => 'Organisasi', 'group' => 'Kelompok'];
-        $dateFormat = match($period) { 'daily' => '%Y-%m-%d', 'yearly' => '%Y', default => '%Y-%m' };
-        $trendData = (clone $filteredQuery)->select(DB::raw("DATE_FORMAT(created_at, '{$dateFormat}') as date_label"), DB::raw('count(*) as total'))->groupBy('date_label')->orderBy('date_label', 'asc')->get()->pluck('total', 'date_label');
-        $responseTimeData = (clone $filteredQuery)->whereNotNull('updated_at')->where('status', '!=', 'Checking')->select('request_category', DB::raw('AVG(TIMESTAMPDIFF(DAY, created_at, updated_at)) as avg_days'))->groupBy('request_category')->get();
-
-        return [
-            'summary' => $summary,
-            'byStatus' => ['labels' => $byStatusData->keys(), 'values' => $byStatusData->values()],
-            'byCategory' => ['labels' => $byCategoryData->map(fn($i) => $categoryLabels[$i->request_category] ?? $i->request_category), 'values' => $byCategoryData->pluck('total')],
-            'trend' => ['labels' => $trendData->keys(), 'values' => $trendData->values()],
-            'responseTime' => ['labels' => $responseTimeData->map(fn($i) => $categoryLabels[$i->request_category] ?? $i->request_category), 'values' => $responseTimeData->pluck('avg_days')]
-        ];
+        $html .= "
+            <tr>
+                <td>{$iteration}</td>
+                <td>{$req->name}</td>
+                <td>{$req->email}</td>
+                <td>" . Str::limit($req->informasi_terkait, 30) . "</td>
+                <td>{$statusBadge}</td>
+                <td>{$tanggal}</td>
+                <td><a href='#' class='btn btn-sm btn-info'>Detail</a></td>
+            </tr>
+        ";
     }
+
+    return $html;
+}
+
+private function fetchStatisticalData(Carbon $start, Carbon $end, string $status): array
+{
+    $query = PublicInformationRequest::whereBetween('created_at', [$start, $end]);
+    if ($status !== 'all') {
+        $query->where('status', $status);
+    }
+
+    $filtered = clone $query;
+
+    $summary = [
+        'total' => (clone $filtered)->count(),
+        'approved' => (clone $filtered)->where('status', 'Approved')->count(),
+        'rejected' => (clone $filtered)->where('status', 'Rejected')->count(),
+        'pending' => (clone $filtered)->where('status', 'Checking')->count(),
+    ];
+
+    $byStatus = (clone $filtered)
+        ->select('status', DB::raw('count(*) as total'))
+        ->groupBy('status')->get()->pluck('total', 'status');
+
+    return [
+        'summary' => $summary,
+        'byStatus' => [
+            'labels' => $byStatus->keys(),
+            'values' => $byStatus->values()
+        ],
+    ];
+}
     public function keberatanIndex()
     {
         $initialChartData = $this->fetchKeberatanStats(Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth(), 'all');

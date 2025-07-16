@@ -16,6 +16,8 @@ class PublicInformationRequestResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'user_id' => $this->user_id,
+            'name' => $this->user ? $this->user->name : null,
             'request_category' => $this->request_category,
             'nama_pemohon' => $this->nama_pemohon,
             'nik' => $this->nik,

@@ -71,7 +71,6 @@
                         <th>Alasan Pengajuan</th>
                         <th>Status</th>
                         <th>Tanggal Diajukan</th>
-                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="objectionTableBody">
@@ -89,10 +88,6 @@
                             @endif
                         </td>
                         <td>{{ $obj->created_at->format('d M Y') }}</td>
-                        <td>
-                            {{-- Ganti '#' dengan rute detail yang benar --}}
-                            <a href="#" class="btn btn-sm btn-info">Detail</a>
-                        </td>
                     </tr>
                     @empty
                     <tr>
@@ -114,8 +109,8 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 // KODE JAVASCRIPT INI TIDAK PERLU DIUBAH SAMA SEKALI DARI VERSI SEBELUMNYA
-document.addEventListener('DOMContentLoaded', function() {
-    const initialData = @json($initialChartData);
+document.addEventListener('DOMContentLoaded', function () {
+    const initialData = @json($initialChartData); // eslint-disable-line
     let statisticChart = null;
     const statusFilter = document.getElementById('statusFilter');
     const startDateFilter = document.getElementById('startDate');

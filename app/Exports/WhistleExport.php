@@ -20,14 +20,22 @@ class WhistleExport implements FromCollection, WithHeadings
     {
         return $this->data->map(function ($item) {
             return [
-                $item->id,
-                $item->nama,
-                $item->no_hp,
-                $item->email,
-                $item->tindakan,
-                $item->nama_terlapor,
-                $item->status,
-                $item->created_at->format('Y-m-d')
+            $item->id,
+            $item->user_id,
+            $item->nama,
+            $item->no_hp,
+            $item->email,
+            $item->tindakan,
+            $item->nama_terlapor,
+            $item->jabatan_terlapor,
+            $item->tanggal_waktu,
+            $item->lokasi_kejadian,
+            $item->kronologis,
+            $item->nominal_korupsi,
+            $item->status,
+            $item->alasan,
+            $item->created_at->format('Y-m-d'),
+            $item->updated_at->format('Y-m-d')
             ];
         });
     }
@@ -35,13 +43,21 @@ class WhistleExport implements FromCollection, WithHeadings
     {
         return [
             'ID',
+            'User ID',
             'Nama',
             'No HP',
             'Email',
             'Tindakan',
-            'Terlapor',
+            'Nama Terlapor',
+            'Jabatan Terlapor',
+            'Tanggal/Waktu',
+            'Lokasi Kejadian',
+            'Kronologis',
+            'Nominal Korupsi',
             'Status',
-            'Dibuat'
+            'Alasan',
+            'Tanggal Diajukan',
+            'Tanggal Diperbarui'
         ];
     }
 }

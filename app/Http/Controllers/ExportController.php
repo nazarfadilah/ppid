@@ -6,7 +6,7 @@ use App\Models\PublicInformationRequest;
 use App\Models\Whistle;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\PublicInformationExport;
-use PDF;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\View;
 use Illuminate\Http\Request;
 

@@ -21,10 +21,16 @@
         </div><div class="container-fluid">
             <div class="row mb-3">
                 <div>
-                    <div class="alert alert-info mb-3">
+                    <div class="alert alert-info mb-1">
                         <div class="d-flex align-items-center">
                             <i class="bi bi-info-circle me-2"></i>
-                            <span>Total : <strong>{{ $totalObjection}}</strong></span>
+                            <span>Total : <strong>{{ $totalObjection }}</strong></span>
+                            <span class="ms-3 me-3">|</span>
+                            <div class="d-inline">
+                                <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#exportModal">
+                                    <i class="bi bi-file-earmark-arrow-down"></i> Export
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -104,9 +110,7 @@
                 <ul class="pagination justify-content-center" id="pagination"></ul>
             </nav>
             <!-- Tempelkan tombol ini di halaman admin keberatan -->
-            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exportModal">
-                <i class="bi bi-download me-1"></i> Export Data
-            </button>
+            
         </div>
         <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
         <div class="modal-dialog">

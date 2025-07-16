@@ -23,8 +23,7 @@ class StatusPermohonanMail extends Mailable
     public function build()
     {
         $mail = $this->view('emails.status-permohonan')
-                     ->with(['pesan' => $this->pesan]);
-                     ->with(['alasan' => $this->reason]);
+                     ->with(['alasan' => $this->reason, 'pesan' => $this->pesan]);
 
         if ($this->fileLampiran) {
             $mail->attach($this->fileLampiran, [

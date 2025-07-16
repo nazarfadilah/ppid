@@ -7,12 +7,12 @@
       display: flex;
       flex-direction: column;
   }
-  
+
   .img-box img {
       width: 100%; /* Menjamin gambar mengisi lebar box */
       height: auto; /* Menjaga proporsi gambar */
   }
-  
+
   .detail-box {
       flex-grow: 1; /* Memastikan detail-box mengambil sisa ruang */
       display: flex;
@@ -54,7 +54,7 @@
     <div class=" ">
       <div class="row">
         <div class="col mx-auto">
-            <a href="{{ route('request.form') }}" class="text-decoration-none text-dark">
+            <a href="{{ route('login') }}" class="text-decoration-none text-dark">
                 <div class="box rounded-lg d-flex flex-column">
                     <div class="img-box">
                         <img src="images/s1.png" alt="" />
@@ -68,7 +68,7 @@
             </a>
         </div>
         <div class="col mx-auto">
-          <a href="{{ route('objection.form') }}" class="text-decoration-none text-dark">
+          <a href="{{ route('login') }}" class="text-decoration-none text-dark">
             <div class="box rounded-lg d-flex flex-column">
               <div class="img-box">
                 <img src="images/s1.png" alt="" />
@@ -82,7 +82,7 @@
           </a>
         </div>
         <div class="col mx-auto">
-          <a href="{{ route('whistle-bowling') }}" class="text-decoration-none text-dark">
+          <a href="{{ route('login') }}" class="text-decoration-none text-dark">
             <div class="box rounded-lg d-flex flex-column">
               <div class="img-box">
                 <img src="images/s1.png" alt="" />
@@ -95,7 +95,7 @@
             </div>
           </a>
         </div>
-        
+
       </div>
       <div class="btn-box">
       </div>
@@ -208,7 +208,7 @@
   if (carouselElement) {
     var carousel = new bootstrap.Carousel(carouselElement);
   }
-});  
+});
 
 function scrollAwards(direction) {
   const container = document.querySelector('.awards-carousel');

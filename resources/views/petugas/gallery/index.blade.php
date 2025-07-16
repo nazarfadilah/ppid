@@ -44,7 +44,7 @@
             <table class="table table-striped table-sm" style="width:100%" id="galleryTable">
             <thead class="table-dark">
                 <tr>
-                <th>ID</th>
+                <th>No</th>
                 <th>Judul</th>
                 <th>Link/File</th>
                 <th>Type</th>
@@ -54,15 +54,15 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($galleries as $gallery)
+                @foreach($galleries->sortByDesc('created_at') as $gallery)
                 <tr>
-                    <td>{{ $gallery->id }}</td>
+                    <td>{{ $loop->iteration }}</td>
                     <td>{{ $gallery->title }}</td>
                     <td>
                         @if($gallery->type === 'link')
                             <a href="{{ $gallery->link }}" target="_blank">{{ $gallery->link }}</a>
                         @elseif(!empty($gallery->file_path))
-                            <a href="{{ route('galleries.show-blob', $gallery->id) }}" target="_blank">
+                            <a href="{{ route('galeri.petugas', $gallery->id) }}" target="_blank">
                                 Lihat {{ ucfirst($gallery->type) }}
                             </a>
                         @else

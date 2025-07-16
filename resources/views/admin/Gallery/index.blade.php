@@ -53,10 +53,14 @@
                             <td>{{ $gallery->id }}</td>
                             <td>{{ $gallery->title }}</td>
                             <td>
-                                @if($gallery->type === 'foto')
-                                    <a href="{{ asset('storage/'.$gallery->link) }}" target="_blank">Lihat Foto</a>
-                                @else
+                                @if($gallery->type === 'link')
                                     <a href="{{ $gallery->link }}" target="_blank">{{ $gallery->link }}</a>
+                                @elseif(!empty($gallery->file_path))
+                                    <a href="{{ route('galleries.show-blob', $gallery->id) }}" target="_blank">
+                                        Lihat {{ ucfirst($gallery->type) }}
+                                    </a>
+                                @else
+                                    <span>Tidak ada file</span>
                                 @endif
                             </td>
                             <td>{{ ucfirst($gallery->type) }}</td>

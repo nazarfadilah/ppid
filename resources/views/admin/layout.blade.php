@@ -55,6 +55,12 @@
                                 Pengaduan Whistle Blowing
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link d-flex align-items-center text-black {{ request()->routeIs('whistles*') ? 'active' : '' }}" href="{{ route('admin.user.index') }}">
+                            <img src="{{ asset('assets/admin.svg') }}" alt="Admins" style="width: 19px; height: 19px; margin-right: 6px;">
+                                User/Masyarakat
+                            </a>
+                        </li>
 
                         <li class="nav-item">
                             <a class="nav-link d-flex align-items-center text-black {{ request()->routeIs('settings*') ? 'active' : '' }}" href="">

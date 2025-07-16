@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <h2>Edit Galeri</h2>
-    <form action="{{ route('galleries.update', $galleries->id) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('galleries-update', $galleries->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         <div class="mb-3">
@@ -16,7 +16,7 @@
         </div>
         <div class="mb-3">
             <label for="date" class="form-label">Tanggal</label>
-            <input type="date" class="form-control" id="date" name="date" value="{{ old('date', $galleries->date) }}" required>
+            <input type="date" class="form-control" id="date" name="date" value="{{ old('date', $galleries->date ? date('Y-m-d', strtotime($galleries->date)) : '') }}" required>
         </div>
         <div class="mb-3">
             <label for="type" class="form-label">Tipe</label>

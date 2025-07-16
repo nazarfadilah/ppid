@@ -16,7 +16,8 @@ class ObjectionResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'code' => $this->code,
+            'user_id' => $this->user_id,
+            'name' => $this->user ? $this->user->name : null,
             'nama_pemohon' => $this->nama_pemohon,
             'alamat_pemohon' => $this->alamat_pemohon,
             'pekerjaan_pemohon' => $this->pekerjaan_pemohon,

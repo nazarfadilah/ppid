@@ -21,6 +21,7 @@ class GalleriesResource extends JsonResource
             'type'        => $this->type,
             'description' => $this->description,
             'date'        => $this->date, // already formatted by accessor
+            'file_path'   => $this->file_path, // Assuming file_path is a storage path
             'created_at'  => $this->created_at,
             'updated_at'  => $this->updated_at,
         ];

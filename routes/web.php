@@ -23,6 +23,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RektorController;
 use App\Http\Middleware\AuthLogin;
 use App\Http\Controllers\ExportController;
+use App\Http\Controllers\PublicController;
 
 
 
@@ -128,6 +129,8 @@ Route::post('/whistles-create', [WhistleController::class, 'store'])->name('whis
 // Route Khusus login dan logout
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login/proses', [AuthController::class, 'login'])->name('api-login');
+Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
+Route::post('/register/proses', [AuthController::class, 'register'])->name('api-register');
 Route::post('/logout', [AuthController::class, 'logout'])->name('api-logout');
 
 // Route Petugas Gallery
@@ -185,11 +188,15 @@ Route::get('/admin/objection', [AdminController::class, 'objection'])->name('adm
 Route::get('/admin/objection/{id}', [AdminController::class, 'objectionDetail'])->name('admin-objection-detail');
 Route::get('/admin/whistle', [AdminController::class, 'whistleBowling'])->name('admin-whistle');
 Route::get('admin/whistle/{id}', [AdminController::class, 'whistleDetail'])->name('admin-whistle-detail');
+Route::get('/admin/user-management', [AdminController::class, 'userManagement'])->name('admin.user.index');
+Route::delete('/admin/user-management/{id}', [AdminController::class, 'userHapus'])->name('admin.user.hapus');
 
 // Kusus Akses Halaman Petugas
 Route::get('/petugas/dashboard', [PetugasController::class, 'index'])->name('petugas-dashboard');
 Route::get('/petugas/galeri', [PetugasController::class, 'galleries'])->name('petugas-galeri');
 Route::get('/petugas/galeri/create', [PetugasController::class, 'galleriesCreate'])->name('petugas-galeri-create');
+Route::post('/petugas/galeri/store', [GalleriesController::class, 'store'])->name('galleries-create');
+Route::put('/petugas/galeri/{id}', [GalleriesController::class, 'update'])->name('galleries-update');
 Route::get('/petugas/galeri/edit/{id}', [PetugasController::class, 'galleriesEdit'])->name('petugas-galeri-edit');
 Route::get('/petugas/informasi', [PetugasController::class, 'publicInformation'])->name('petugas-informasi');
 Route::get('/petugas/informasi/{id}', [PetugasController::class, 'publicInformationDetail'])->name('petugas-informasi-detail');
@@ -220,9 +227,29 @@ Route::get('/petugas/information/ktp/{id}', [PublicInformationRequestController:
 Route::get('/admin/informasi/ktp/{id}', [PublicInformationRequestController::class, 'showKTP'])->name('admin-informasi.ktp');
 Route::get('/admin/objection/ktp/{id}', [ObjectionController::class, 'showKTP'])->name('admin-objection.ktp');
 Route::get('/admin/whistle/image/{id}', [WhistleController::class, 'showImage'])->name('admin-whistle.image');
+Route::get('/admin/galeri/{id}', [GalleriesController::class, 'showBlob'])->name('galleries.show-blob');
+Route::get('/rektor/galeri/{id}', [GalleriesController::class, 'showBlob'])->name('galleries-public');
+Route::get('/petugas/galeri/{id}', [GalleriesController::class, 'showBlob'])->name('galeri.petugas');
+
+Route::get('/public/informasi/ktp/{id}', [PublicInformationRequestController::class, 'showKTP'])->name('public-informasi.ktp');
+Route::get('/public/objection/ktp/{id}', [ObjectionController::class, 'showKTP'])->name('public-objection.ktp');
+Route::get('/public/whistle/image/{id}', [WhistleController::class, 'showImage'])->name('public-whistle.image');
+
 
 
 // Khusus Export
 Route::post('/admin/request/export', [ExportController::class, 'export'])->name('admin-request-export');
 Route::post('/admin/objection/export', [ExportController::class, 'exportObjection'])->name('admin-objection-export');
-Route::get('/galeri/{id}/blob', [GalleryController::class, 'showBlob'])->name('galleries.show-blob');
+Route::post('/admin/whistle/export', [ExportController::class, 'exportWhistle'])->name('admin-whistle-export');
+
+// Route untuk PublicController
+Route::get('/public/dashboard', [PublicController::class, 'dashboard'])->name('public-dashboard');
+Route::get('/public/information-requests', [PublicController::class, 'showPublicInformationRequests'])->name('public.information-requests');
+Route::get('/public/objections', [PublicController::class, 'showObjections'])->name('public.objections');
+Route::get('/public/whistles', [PublicController::class, 'showWhistles'])->name('public.whistles');
+Route::get('/public/information-requests/create', [PublicController::class, 'fromStoreRequest'])->name('public.information-requests.create');
+Route::get('/public/objections/create', [PublicController::class, 'fromStoreObjection'])->name('public.objections.create');
+Route::get('/public/whistles/create', [PublicController::class, 'fromStoreWhistle'])->name('public.whistles.create');
+Route::get('/public/information-requests/{request}', [PublicController::class, 'showPublicInformationRequest'])->name('public-information.detail');
+Route::get('/public/objections/{objection}', [PublicController::class, 'showObjection'])->name('objection.show');
+Route::get('/public/whistles/{whistle}', [PublicController::class, 'showWhistle'])->name('whistle-detail');

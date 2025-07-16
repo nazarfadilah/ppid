@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Mail\StatusPermohonanMail;
 use App\Http\Resources\PublicInformationRequestResource;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Auth;
 
 
 class PublicInformationRequestController extends Controller
@@ -32,11 +33,12 @@ class PublicInformationRequestController extends Controller
             $file = $request->file('ktp');
             $data['ktp'] = file_get_contents($file->getRealPath()); // simpan sebagai BLOB
         }
+        $data['user_id'] = Auth::user()->id; // Set user_id from authenticated user
         $publicRequest = PublicInformationRequest::create($data);
         if ($publicRequest) {
-            return redirect()->route('public.index')->with('success', 'Data keberatan berhasil dikirim.');
+            return redirect()->route('public.information-requests')->with('success', 'Data keberatan berhasil dikirim.');
         } else {
-            return redirect()->route('public.index')->with('error', 'Data keberatan gagal dikirim.');
+            return redirect()->route('public.information-requests')->with('error', 'Data keberatan gagal dikirim.');
         }
     }
 

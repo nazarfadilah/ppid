@@ -17,7 +17,7 @@
 
         <div class="row">
             <div class="col-lg-3 col-md-6 mb-4">
-                <a href="{{ route('admin-request') }}" class="text-decoration-none">
+                <a href="{{ route('rektor-informasi') }}" class="text-decoration-none">
                     <div class="card bg-primary text-white shadow-sm h-100 rounded-3 border-0">
                         <div class="card-body d-flex flex-column align-items-center justify-content-center py-4">
                             <h2 class="display-4 fw-bold mb-3">{{ $totalPublicInformationRequest }}</h2>
@@ -28,7 +28,7 @@
             </div>
 
             <div class="col-lg-3 col-md-6 mb-4">
-                <a href="{{ route('admin-objection') }}" class="text-decoration-none">
+                <a href="{{ route('rektor-keberatan') }}" class="text-decoration-none">
                     <div class="card bg-success text-white shadow-sm h-100 rounded-3 border-0">
                         <div class="card-body d-flex flex-column align-items-center justify-content-center py-4">
                             <h2 class="display-4 fw-bold mb-3">{{ $totalObjection }}</h2>
@@ -39,7 +39,7 @@
             </div>
 
             <div class="col-lg-3 col-md-6 mb-4">
-                <a href="{{ route('admin-whistle') }}" class="text-decoration-none">
+                <a href="{{ route('rektor-whistle') }}" class="text-decoration-none">
                     <div class="card bg-danger text-white shadow-sm h-100 rounded-3 border-0">
                         <div class="card-body d-flex flex-column align-items-center justify-content-center py-4">
                             <h2 class="display-4 fw-bold mb-3">{{ $totalWhistle }}</h2>

@@ -17,6 +17,7 @@ class ObjectionFactory extends Factory
     public function definition(): array
     {
         return [
+            'user_id' => 4, // Assuming user_id can be nullable
             'nama_pemohon' => $this->faker->name(),
             'alamat_pemohon' => $this->faker->address(),
             'pekerjaan_pemohon' => $this->faker->jobTitle(),

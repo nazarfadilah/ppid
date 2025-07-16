@@ -17,6 +17,7 @@ class PublicInformationRequestFactory extends Factory
     public function definition(): array
     {
         return [
+            'user_id' => 4, // Assuming user_id can be nullable
             'request_category' => $this->faker->randomElement(['individual', 'organization', 'group']),
             'nama_pemohon' => $this->faker->name(),
             'nik' => $this->faker->numerify(str_repeat('#', 16)),

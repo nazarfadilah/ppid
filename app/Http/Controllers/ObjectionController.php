@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
 class ObjectionController extends Controller
 {
@@ -21,16 +24,23 @@ class ObjectionController extends Controller
         return ObjectionResource::collection($objection);
     }
 
-    public function store(Request $request)
-    {
-        $data = $request->except('ktp_pemohon');
-        if ($request->hasFile('ktp_pemohon')) {
-            $file = $request->file('ktp_pemohon');
-            $data['ktp_pemohon'] = file_get_contents($file->getRealPath()); // simpan sebagai BLOB
-        }
-        $objection = Objection::create($data);
-        return redirect()->route('public.index')->with('success', 'Data keberatan berhasil dikirim.');
+public function store(Request $objection)
+{
+    $data = $objection->except('ktp_pemohon');
+
+    if ($objection->hasFile('ktp_pemohon')) {
+        $file = $objection->file('ktp_pemohon');
+        $data['ktp_pemohon'] = file_get_contents($file->getRealPath());
     }
+
+    $data['user_id'] = Auth::id();
+    // Optional debug
+    // dd($data);
+    $objection = Objection::create($data);
+
+    return redirect()->route('public.objections')->with('success', 'Data keberatan berhasil dikirim.');
+}
+
 
     public function show(Objection $objection)
     {

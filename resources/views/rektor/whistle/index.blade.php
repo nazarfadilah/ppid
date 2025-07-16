@@ -40,10 +40,10 @@
             <div class="col-lg-5">
                 <div class="row">
                     <div class="col-6 mb-3"><div class="card bg-primary text-white"><div class="card-body"><h5 class="card-title">Total</h5><h2 id="totalRequests">0</h2></div></div></div>
-                    <div class="col-6 mb-3"><div class="card bg-info text-white"><div class="card-body"><h5 class="card-title">Dikonfirmasi</h5><h2 id="confirmedRequests">0</h2></div></div></div>
+                    <div class="col-6 mb-3"><div class="card bg-success text-white"><div class="card-body"><h5 class="card-title">Dikonfirmasi</h5><h2 id="confirmedRequests">0</h2></div></div></div>
                     <div class="col-6 mb-3"><div class="card bg-danger text-white"><div class="card-body"><h5 class="card-title">Ditolak</h5><h2 id="rejectedRequests">0</h2></div></div></div>
-                    <div class="col-6 mb-3"><div class="card bg-success text-white"><div class="card-body"><h5 class="card-title">Selesai</h5><h2 id="finishedRequests">0</h2></div></div></div>
-                    <div class="col-12"><div class="card bg-warning text-dark"><div class="card-body"><h5 class="card-title">Pending</h5><h2 id="pendingRequests">0</h2></div></div></div>
+                    <div class="col-6 mb-3"><div class="card bg-warning text-white"><div class="card-body"><h5 class="card-title">Selesai</h5><h2 id="finishedRequests">0</h2></div></div></div>
+                    <div class="col-12"><div class="card bg-info text-dark"><div class="card-body"><h5 class="card-title">Pending</h5><h2 id="pendingRequests">0</h2></div></div></div>
                 </div>
             </div>
         </div>
@@ -73,7 +73,6 @@
                         <th>Tindakan</th>
                         <th>Nama Terlapor</th>
                         <th>Status</th>
-                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="whistleTableBody">
@@ -91,9 +90,6 @@
                             @elseif($whistle->status == 'finished') <span class="badge bg-success">Finished</span>
                             @else <span class="badge bg-warning">Pending</span>
                             @endif
-                        </td>
-                        <td>
-                            <a href="#" class="btn btn-sm btn-info">Detail</a>
                         </td>
                     </tr>
                     @empty

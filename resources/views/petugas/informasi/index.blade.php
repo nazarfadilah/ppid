@@ -19,9 +19,9 @@
                     <div class="col-md-3">
                         <select id="statusFilter" class="form-select">
                             <option value="">Semua Status</option>
-                            <option value="Approved">Approved</option>
-                            <option value="Checking">Checking</option>
-                            <option value="Rejected">Rejected</option>
+                            <option value="approved">Approved</option>
+                            <option value="checking">Checking</option>
+                            <option value="rejected">Rejected</option>
                         </select>
                     </div>
                     <div class="col-md-3">
@@ -43,7 +43,7 @@
                     <option value="25">25</option>
                     <option value="50">50</option>
                 </select>
-                <span>data per halaman</span>
+                {{-- <span>data per halaman</span> --}}
             </div>
         </div>
 

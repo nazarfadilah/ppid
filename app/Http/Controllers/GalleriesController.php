@@ -20,9 +20,30 @@ class GalleriesController extends Controller
      */
     public function store(Request $request)
     {
-        Galleries::create($request->all());
+        $data = $request->except('file_path', 'link'); // kita proses manual nanti
+
+        if ($request->type === 'link') {
+            // Simpan link jika tipe adalah "link"
+            $data['link'] = $request->input('link');
+            $data['file_path'] = null;
+        } else {
+            // Simpan file jika tipe adalah selain "link"
+            if ($request->hasFile('file_path')) {
+                $file = $request->file('file_path');
+                $data['file_path'] = file_get_contents($file->getRealPath());
+            } else {
+                $data['file_path'] = null;
+            }
+            $data['link'] = null;
+        }
+
+        Galleries::create($data);
+
         return redirect()->route('petugas-galeri')->with('success', 'Data galeri berhasil ditambahkan.');
     }
+
+
+
     /**
      * Display the specified resource.
      */
@@ -35,11 +56,29 @@ class GalleriesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Galleries $gallery)
-    {
-       $gallery->update($request->all());
-        return redirect()->route('petugas-galeri')->with('success', 'Data galeri berhasil diperbarui.');
+   public function update(Request $request, Galleries $gallery)
+{
+    $data = $request->except('file_path', 'link');
+
+    if ($request->type === 'link') {
+        // Simpan link jika tipe adalah "link"
+        $data['link'] = $request->input('link');
+        $data['file_path'] = null;
+    } else {
+        // Simpan file jika tipe adalah selain "link"
+        if ($request->hasFile('file_path')) {
+            $file = $request->file('file_path');
+            $data['file_path'] = file_get_contents($file->getRealPath());
+        }
+        $data['link'] = null;
     }
+
+    $gallery->update($data);
+
+    // return redirect()->route('petugas-galeri')->with('success', 'Data galeri berhasil diperbarui.');
+    return response()->json('Gallery updated successfully');
+}
+
 
     /**
      * Remove the specified resource from storage.
@@ -57,20 +96,30 @@ class GalleriesController extends Controller
 
     public function showBlob($id)
     {
-        $gallery = Gallery::findOrFail($id);
+        // Find the gallery by ID
+        $gallery = Galleries::findOrFail($id);
 
-        if (empty($gallery->file_path)) {
+        // Check if file_path data exists in database
+        if (!$gallery->file_path) {
             abort(404, 'File tidak ditemukan');
         }
 
+        // Get the binary data from the BLOB field
         $binary = $gallery->file_path;
 
-        // Deteksi MIME type otomatis dari BLOB
-        $finfo = new \finfo(FILEINFO_MIME_TYPE);
-        $mimeType = $finfo->buffer($binary);
+        // Detect MIME type using finfo
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimeType = finfo_buffer($finfo, $binary);
+        finfo_close($finfo);
 
+        // If MIME type detection fails, default to image/jpeg
+        if (!$mimeType || $mimeType === 'application/octet-stream') {
+            $mimeType = 'image/jpeg';
+        }
+
+        // Return response with appropriate headers
         return response($binary)
             ->header('Content-Type', $mimeType)
-            ->header('Content-Disposition', 'inline; filename="file_' . $gallery->id . '.' . explode('/', $mimeType)[1] . '"');
+            ->header('Content-Disposition', 'inline');
     }
 }

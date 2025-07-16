@@ -16,6 +16,8 @@ class WhistleResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'user_id' => $this->user_id,
+            'name' => $this->user ? $this->user->name : null,
             'nama' => $this->nama,
             'no_hp' => $this->no_hp,
             'email' => $this->email,

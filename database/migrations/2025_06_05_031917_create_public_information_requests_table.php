@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('public_information_requests', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->enum('request_category', ['individual', 'organization', 'group'])->default('individual');
             $table->string('nama_pemohon', 64);
             $table->string('nik', 16);
@@ -20,7 +21,7 @@ return new class extends Migration
             $table->string('email');
             $table->text('informasi_terkait');
             $table->text('alasan_informasi');
-            // Pengguna Informasi
+            // Pengguna Informasi/
             $table->string('nama_pengguna_informasi', 64);
             $table->string('nik_pengguna_informasi', 16);
             $table->text('alamat_pengguna_informasi');
@@ -39,6 +40,9 @@ return new class extends Migration
             $table->enum('status', ['Approved', 'Checking', 'Rejected'])->default('Checking');
             $table->text('reject_reason')->nullable();
             $table->timestamps();
+        });
+        Schema::table('public_information_requests', function (Blueprint $table) {
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
         });
     }
 

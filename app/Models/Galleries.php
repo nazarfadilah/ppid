@@ -19,6 +19,7 @@ class Galleries extends Model
         'type',
         'description',
         'date',
+        'file_path',
     ];
 
     // Menentukan apakah kolom timestamps (created_at dan updated_at) digunakan

@@ -29,7 +29,7 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
-            'role' => $this->faker->randomElement(['1', '2', '3']),
+            'user_level_id' => 4 // Default user level, can be changed as needed
         ];
     }
 

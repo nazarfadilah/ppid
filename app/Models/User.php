@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\UserLevel;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -22,7 +23,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'user_level_id',
     ];
+
 
     /**
      * The attributes that should be hidden for serialization.
@@ -45,5 +48,12 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    /**
+     * Get the user level associated with the user.
+     */
+    public function userLevel()
+    {
+        return $this->belongsTo(UserLevel::class, 'user_level_id'); 
     }
 }

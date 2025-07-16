@@ -17,10 +17,10 @@ use App\Http\Controllers\Api\AuthController as ApiAuthController;
 
 
 // Route::get('/user', fn(Request $request) => $request->user())->middleware('AuthLogin');
-Route::middleware([AuthLogin::class])->group(function () {
-Route::apiResource('public-information-requests', PublicInformationRequestController::class);
-Route::apiResource('objections', ObjectionController::class);
-Route::apiResource('galleries', GalleriesController::class);
-Route::apiResource('whistles', WhistleController::class);
-});
+// Route::middleware([AuthLogin::class])->group(function () {
+// Route::apiResource('public-information-requests', PublicInformationRequestController::class);
+// Route::apiResource('objections', ObjectionController::class);
+// Route::apiResource('galleries', GalleriesController::class);
+// Route::apiResource('whistles', WhistleController::class);
+// });
 

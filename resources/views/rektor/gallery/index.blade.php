@@ -41,7 +41,7 @@
                     <tr>
                         <th>ID</th>
                         <th>Judul</th>
-                        <th>Link</th>
+                        <th>Link/File</th>
                         <th>Type</th>
                         <th>Deskripsi</th>
                         <th>Tanggal</th>
@@ -53,10 +53,14 @@
                             <td>{{ $gallery->id }}</td>
                             <td>{{ $gallery->title }}</td>
                             <td>
-                                @if($gallery->type === 'foto')
-                                    <a href="{{ asset('storage/'.$gallery->link) }}" target="_blank">Lihat Foto</a>
-                                @else
+                                @if($gallery->type === 'link')
                                     <a href="{{ $gallery->link }}" target="_blank">{{ $gallery->link }}</a>
+                                @elseif(!empty($gallery->file_path))
+                                    <a href="{{ route('galleries-public', $gallery->id) }}" target="_blank">
+                                        Lihat {{ ucfirst($gallery->type) }}
+                                    </a>
+                                @else
+                                    <span>Tidak ada file</span>
                                 @endif
                             </td>
                             <td>{{ ucfirst($gallery->type) }}</td>

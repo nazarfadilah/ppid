@@ -43,6 +43,10 @@
         <input type="checkbox" class="form-check-input" id="remember" name="remember" {{ old('remember') ? 'checked' : '' }}>
         <label class="form-check-label" for="remember">Remember me</label>
       </div>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <p>Belum punya akun?</p>
+            <a href="{{ route('register') }}">Register Sekarang</a>
+        </div>
       <button type="submit" class="btn btn-primary w-100">Login</button>
     </form>
     </div>

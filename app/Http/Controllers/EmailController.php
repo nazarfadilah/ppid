@@ -63,6 +63,7 @@ class EmailController extends Controller
     {
         $whistle = Whistle::findOrFail($id);
         $alasan = $request->input('alasan'); // 1. Ambil alasan dari form
+        $tindakan = $request->input('tindakan', 'Laporan akan ditindaklanjuti'); // Default value if not provided
 
         // 2. Update status dan alasan di database
         $whistle->status = 'confirmed';
@@ -70,7 +71,7 @@ class EmailController extends Controller
         $whistle->save();
 
         // 3. Kirim email dengan menyertakan objek whistle dan alasannya
-        Mail::to($whistle->email)->send(new WhistleConfirmedMail($whistle, $alasan));
+        Mail::to($whistle->email)->send(new WhistleConfirmedMail($whistle->nama, $alasan, $tindakan));
 
         return redirect()->route('petugas-whistle-bowling')->with('success', 'Laporan berhasil dikonfirmasi.');
     }
@@ -79,14 +80,15 @@ class EmailController extends Controller
     {
         $whistle = Whistle::findOrFail($id);
         $alasan = $request->input('alasan'); // 1. Ambil alasan dari form
+        $tindakan = $request->input('tindakan', 'Laporan telah diselesaikan'); // Default value if not provided
 
         // 2. Update status dan alasan di database
         $whistle->status = 'finished';
         $whistle->alasan = $alasan;
         $whistle->save();
 
-        // 3. Kirim email dengan menyertakan objek whistle dan alasannya
-        Mail::to($whistle->email)->send(new WhistleFinishedMail($whistle, $alasan));
+        // 3. Kirim email dengan menyertakan nama, tindakan, dan alasannya
+        Mail::to($whistle->email)->send(new WhistleFinishedMail($whistle->nama, $tindakan, $alasan));
 
         return redirect()->route('petugas-whistle-bowling')->with('success', 'Laporan berhasil diselesaikan.');
     }
@@ -95,6 +97,7 @@ class EmailController extends Controller
     {
         $whistle = Whistle::findOrFail($id);
         $alasan = $request->input('alasan'); // 1. Ambil alasan dari form
+        $tindakan = $request->input('tindakan', 'Laporan ditolak'); // Default value if not provided
 
         // 2. Update status dan alasan di database
         $whistle->status = 'rejected';
@@ -102,7 +105,7 @@ class EmailController extends Controller
         $whistle->save();
 
         // 3. Kirim email dengan menyertakan objek whistle dan alasannya
-        Mail::to($whistle->email)->send(new WhistleRejectedMail($whistle, $alasan));
+        Mail::to($whistle->email)->send(new WhistleRejectedMail($whistle->nama, $tindakan, $alasan));
 
         return redirect()->route('petugas-whistle-bowling')->with('success', 'Laporan berhasil ditolak.');
     }
@@ -134,14 +137,11 @@ class EmailController extends Controller
 
         // Ambil file lampiran dari request
         $lampiran = $request->file('lampiran');
+        $lampiranPath = $lampiran->getRealPath();
 
-        // Kirim email ke pemohon (dan pengguna informasi jika perlu)
+        // Kirim email ke pemohon dengan parameter yang benar
         Mail::to($pemohonEmail)->send(
-            (new StatusPermohonanMail($pesan))
-                ->attach($lampiran->getRealPath(), [
-                    'as' => $lampiran->getClientOriginalName(),
-                    'mime' => $lampiran->getClientMimeType(),
-                ])
+            new StatusPermohonanMail($pesan, $lampiranPath, $reason)
         );
         // Jika email pengguna informasi berbeda dan perlu dikirim juga, ulangi proses Mail::send di sini.
 
@@ -164,8 +164,7 @@ class EmailController extends Controller
         // 2. Update status dan alasan di database
         $data->status = 'Rejected';
         $data->reject_reason = $reason;
-        $data->save();
-
+        
         // Ambil data untuk email
         $pemohonNama = $data->nama_pemohon;
         $pemohonEmail = $data->email;
@@ -173,9 +172,12 @@ class EmailController extends Controller
 
         // 3. Buat pesan email yang menyertakan alasan penolakan
         $pesan = "Halo {$pemohonNama},\n\nMohon maaf, permohonan informasi Anda terkait \"{$informasi}\" telah ditolak.\n\nAlasan penolakan:\n{$reason}";
+        
+        // Simpan pesan ke database
+        $data->save();
 
         // Kirim email ke pemohon (dan pengguna informasi jika perlu)
-        Mail::to($pemohonEmail)->send(new StatusPermohonanMail($pesan));
+        Mail::to($pemohonEmail)->send(new StatusPermohonanMail($pesan, null, $reason));
 
         return redirect()->route('petugas-informasi')->with('success', 'Permohonan ditolak dan email telah dikirim.');
     }
